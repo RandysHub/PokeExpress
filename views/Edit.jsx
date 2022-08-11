@@ -9,6 +9,7 @@ class Edit extends React.Component {
             <html>
                 <head>
                     <title>Edit Pokemon!</title>
+                    <link rel="stylesheet" href="css/index.css" />
                 </head>
                 <body >
                     <h1 >Update Your Pokedex Entry</h1>

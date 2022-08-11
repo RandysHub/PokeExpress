@@ -1,16 +1,18 @@
 const express = require('express');
-require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3003;
+require('dotenv').config();
 const mongoose = require('mongoose'); // Require Mongooose
 const Pokemon = require('./models/pokemon'); //Require pokemon DB
 const methodOverride = require('method-override') //Add method override
 const pokemonData = require('./utilities/pokemonData')
 
+app.use(express.static('public'));
 //DB connection
 mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true, 
-    useUnifiedTopology: true});
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 mongoose.connection.once('open', () => {
     console.log('connected to mongo')
 });
@@ -25,20 +27,16 @@ app.use(methodOverride('_method')) //Sets up methodoverride for use
 //Setting up views
 app.set('view engine', "jsx");
 app.engine('jsx', require('express-react-views').createEngine());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
-app.listen(port, ()=> {
-    console.log(`I am listening on port`, port);
-});
 
 //Our seed route
-app.get('/pokemon/seed', (req, res) => {
+app.get('/pokemon/seed', async (req, res) => {
     //Comment below line if you don't want to delete your whole entire collection
     // Not currently working
-    // Pokemon.deleteMany({})
-
+    await Pokemon.deleteMany({})
     //Create a list of pokemon into our database
-    Pokemon.create(pokemonData)
+    await Pokemon.create(pokemonData)
     res.redirect('/pokemon')
 });
 
@@ -48,10 +46,10 @@ app.get('/', (req, res) => {
 })
 
 //Index page
-app.get('/pokemon', (req, res) => {
+app.get('/pokemon/', (req, res) => {
     Pokemon.find({}, (error, allPokemon) => {
         res.render('Index', {
-            pokemon: allPokemon     
+            pokemon: allPokemon
         })
     })
 });
@@ -62,24 +60,23 @@ app.get('/pokemon/new', (req, res) => {
 });
 
 //Create pokemon POST route
-app.post('/pokemon/', (req, res) => {
+app.post('/pokemon', (req, res) => {
     //Data manipulation
     let name = req.body.name.split('')
     name[0] = name[0].toUpperCase()
     req.body.name = name.join('')
 
-    Pokemon.create(req.body,(err, createdPokemon) => {
-       res.redirect('/pokemon');
-    //    res.send(createdPokemon);
+    Pokemon.create(req.body, (err, createdPokemon) => {
+        res.redirect('/pokemon');
     });
 });
 //Show route
-app.get('/pokemon/:id', (req, res) =>{
-    Pokemon.findById(req.params.id, (err,foundPokemon) =>{
+app.get('/pokemon/:id', (req, res) => {
+    Pokemon.findById(req.params.id, (err, foundPokemon) => {
         res.render("Show", {
             pokemon: foundPokemon
-        }); 
-    });  
+        });
+    });
 });
 
 //Delete Route
@@ -91,11 +88,12 @@ app.delete('/pokemon/:id', (req, res) => {
 });
 // Render Edit Page
 app.get('/pokemon/:id/edit', (req, res) => {
-    Pokemon.findById(req.params.id, (err, foundPokemon) =>{
-        if(!err){
+    Pokemon.findById(req.params.id, (err, foundPokemon) => {
+        if (!err) {
             res.render('Edit', {
                 pokemon: foundPokemon
-        })} else {
+            })
+        } else {
             res.send({
                 msg: err.message
             });
@@ -110,3 +108,7 @@ app.put('/pokemon/:id', (req, res) => {
         res.redirect(`/pokemon/${req.params.id}`)
     })
 });
+
+app.listen(3000, () => {
+    console.log(`I am listening on http://localhost:${port}`)
+})

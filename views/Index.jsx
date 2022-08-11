@@ -5,17 +5,17 @@ class Index extends React.Component {
         return (
             <html >
                 <head>
+                    <link rel="stylesheet" href="/css/index.css" />
                     <title>Pokemon</title>
                 </head>
                 <body >
-                    <h1 >See All The Pokemon!</h1><br />
-                    <h3 >Click the Pokeball to view Pokemon!!!</h3>
+                    <h1 >Say hi to all the Pokemon</h1><br />
                     <ul>
                         {pokemon.map((mons) => {
                             return (
                                 <li >
-                                    <h3>{mons.name}</h3>
-                                    <a href={`/pokemon/${mons.id}`}><img src="https://www.freeiconspng.com/uploads/file-pokeball-png-0.png" width="20px" height="20px"></img></a>
+
+                                    <a href={`/pokemon/${mons.id}`}><h3>{mons.name}</h3></a>
                                     <br />
                                     <form action={`/pokemon/${mons.id}?_method=DELETE`} method="POST">
                                         <button type="submit" ><h4 >Delete Entry</h4></button>
@@ -25,7 +25,7 @@ class Index extends React.Component {
                             );
                         })}
                     </ul>
-                    <a href="/"><button ><h3>Back to Main Directory!</h3></button></a><br />
+                    <a href="/"><button ><h3>Back to all Pokemon</h3></button></a><br />
                 </body>
             </html>
         )
